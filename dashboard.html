@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaos Control Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #ec4899;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.15) 0px, transparent 50%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 99px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--danger);
+            box-shadow: 0 0 10px var(--danger);
+        }
+
+        .status-dot.active {
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-title i {
+            font-size: 1.5rem;
+            color: var(--accent-primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        input[type="number"], input[type="text"] {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--accent-primary);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+        }
+
+        .range-value {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            color: var(--text-dim);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        .btn-toggle {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-toggle.active {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem;
+            border-radius: 1rem;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .logs {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .log-entry {
+            margin-bottom: 0.5rem;
+            border-left: 2px solid var(--accent-primary);
+            padding-left: 0.75rem;
+        }
+
+        .log-time { color: var(--text-dim); }
+        .log-method { color: var(--accent-primary); font-weight: 600; }
+        .log-url { color: var(--text-main); }
+        .log-status { color: var(--success); }
+        .log-status.fail { color: var(--danger); }
+        .log-status.delay { color: var(--warning); }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Chaos Control Center</h1>
+            <div class="status-badge">
+                <div id="statusDot" class="status-dot"></div>
+                <span id="statusText">System Offline</span>
+            </div>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-title">⚙️ General Settings</div>
+                <div class="form-group">
+                    <button id="toggleBtn" class="btn btn-toggle">Enable Chaos Injection</button>
+                </div>
+                <div class="form-group">
+                    <label>Target Server URL</label>
+                    <input type="text" id="targetUrl" placeholder="http://localhost:5000" disabled>
+                </div>
+                <button id="saveBtn" class="btn btn-primary">Apply Configuration</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title">⏳ Latency (ms)</div>
+                <div class="input-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Min</label>
+                        <input type="number" id="latMin" value="100">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Max</label>
+                        <input type="number" id="latMax" value="1000">
+                    </div>
+                </div>
+                <div class="range-value">
+                    <span>Low Impact</span>
+                    <span>High Impact</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🛑 Error Rates</div>
+                <div class="form-group">
+                    <label>Failure Rate (HTTP 500)</label>
+                    <input type="range" id="failRate" min="0" max="1" step="0.01" value="0.1">
+                    <div class="range-value"><span id="failRateVal">10%</span></div>
+                </div>
+                <div class="form-group">
+                    <label>Request Drop Rate</label>
+                    <input type="range" id="dropRate" min="0" max="1" step="0.01" value="0.05">
+                    <div class="range-value"><span id="dropRateVal">5%</span></div>
+                </div>
+                <div class="form-group">
+                    <label>WebSocket Packet Loss</label>
+                    <input type="range" id="wsRate" min="0" max="1" step="0.01" value="0.1">
+                    <div class="range-value"><span id="wsRateVal">10%</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 2rem;">
+            <div class="card-title">📊 Real-time Metrics</div>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value" id="mTotal">0</div>
+                    <div class="metric-label">Total Requests</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="mFail" style="color: var(--danger);">0</div>
+                    <div class="metric-label">Failures</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="mDrop" style="color: var(--warning);">0</div>
+                    <div class="metric-label">Dropped</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="mLatency" style="color: var(--accent-primary);">0</div>
+                    <div class="metric-label">Delayed</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="logs" id="logContainer">
+            <div class="log-entry">
+                <span class="log-time">[System]</span> Dashboard initialized...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = ''; // Same origin
+
+        async function fetchConfig() {
+            const res = await fetch('/admin/config');
+            const config = await res.json();
+            updateUI(config);
+        }
+
+        async function fetchMetrics() {
+            const res = await fetch('/admin/metrics');
+            const metrics = await res.json();
+            document.getElementById('mTotal').innerText = metrics.totalRequests;
+            document.getElementById('mFail').innerText = metrics.failedRequests;
+            document.getElementById('mDrop').innerText = metrics.droppedRequests;
+            document.getElementById('mLatency').innerText = metrics.latencyApplied;
+        }
+
+        function updateUI(config) {
+            const toggleBtn = document.getElementById('toggleBtn');
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+
+            if (config.enabled) {
+                toggleBtn.innerText = 'Disable Chaos Injection';
+                toggleBtn.classList.add('active');
+                statusDot.classList.add('active');
+                statusText.innerText = 'Chaos System Active';
+            } else {
+                toggleBtn.innerText = 'Enable Chaos Injection';
+                toggleBtn.classList.remove('active');
+                statusDot.classList.remove('active');
+                statusText.innerText = 'Chaos System Paused';
+            }
+
+            document.getElementById('latMin').value = config.latency.min;
+            document.getElementById('latMax').value = config.latency.max;
+            document.getElementById('failRate').value = config.failureRate;
+            document.getElementById('dropRate').value = config.dropRate;
+            document.getElementById('wsRate').value = config.packetLoss;
+
+            document.getElementById('failRateVal').innerText = (config.failureRate * 100).toFixed(0) + '%';
+            document.getElementById('dropRateVal').innerText = (config.dropRate * 100).toFixed(0) + '%';
+            document.getElementById('wsRateVal').innerText = (config.packetLoss * 100).toFixed(0) + '%';
+        }
+
+        document.getElementById('toggleBtn').onclick = async () => {
+            const isActive = document.getElementById('toggleBtn').classList.contains('active');
+            await saveConfig({ enabled: !isActive });
+        };
+
+        document.getElementById('saveBtn').onclick = async () => {
+            const config = {
+                latency: {
+                    min: parseInt(document.getElementById('latMin').value),
+                    max: parseInt(document.getElementById('latMax').value)
+                },
+                failureRate: parseFloat(document.getElementById('failRate').value),
+                dropRate: parseFloat(document.getElementById('dropRate').value),
+                packetLoss: parseFloat(document.getElementById('wsRate').value)
+            };
+            await saveConfig(config);
+        };
+
+        async function saveConfig(updates) {
+            const res = await fetch('/admin/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updates)
+            });
+            const data = await res.json();
+            updateUI(data.config);
+            addLog('System', 'Configuration updated successfully');
+        }
+
+        function addLog(type, message) {
+            const logContainer = document.getElementById('logContainer');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            const time = new Date().toLocaleTimeString();
+            entry.innerHTML = `<span class="log-time">[${time}]</span> <span class="log-method">${type}</span> ${message}`;
+            logContainer.prepend(entry);
+        }
+
+        // Event listeners for ranges
+        ['failRate', 'dropRate', 'wsRate'].forEach(id => {
+            document.getElementById(id).oninput = (e) => {
+                document.getElementById(id + 'Val').innerText = (e.target.value * 100).toFixed(0) + '%';
+            };
+        });
+
+        // Initial load
+        fetchConfig();
+        setInterval(fetchMetrics, 2000);
+    </script>
+</body>
+</html>
