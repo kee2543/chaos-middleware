@@ -105,7 +105,21 @@ app.use(chaosMiddleware);
 
 app.use((req, res) => {
   console.log(chalk.blue(' [FORWARD] '), chalk.gray(`${req.method} ${req.url}`));
-  proxy.web(req, res);
+
+  // express.json() consumes the request body stream. We need to re-stream
+  // the parsed body so http-proxy can forward it to the target server.
+  if (req.body && Object.keys(req.body).length > 0) {
+    const bodyData = JSON.stringify(req.body);
+    req.headers['content-length'] = Buffer.byteLength(bodyData);
+    req.headers['content-type'] = 'application/json';
+
+    // Override the proxy request to write the body manually
+    proxy.web(req, res, {
+      buffer: require('stream').Readable.from(bodyData)
+    });
+  } else {
+    proxy.web(req, res);
+  }
 });
 
 // Handle WebSockets

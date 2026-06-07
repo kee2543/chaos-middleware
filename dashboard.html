@@ -6,72 +6,92 @@
     <title>Chaos Control Center</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
+            --bg-color: #0a0e1a;
+            --card-bg: rgba(22, 28, 45, 0.85);
+            --card-bg-hover: rgba(28, 36, 58, 0.9);
             --accent-primary: #8b5cf6;
             --accent-secondary: #ec4899;
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
+            --accent-gradient: linear-gradient(135deg, #8b5cf6, #ec4899);
+            --text-main: #f1f5f9;
+            --text-dim: #64748b;
+            --text-muted: #475569;
             --danger: #ef4444;
             --success: #10b981;
             --warning: #f59e0b;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.15);
+            --input-bg: rgba(10, 14, 26, 0.6);
+            --radius-lg: 1.25rem;
+            --radius-md: 0.75rem;
+            --shadow-glow: 0 0 30px rgba(139, 92, 246, 0.08);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Outfit', sans-serif;
         }
 
         body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 2rem;
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.15) 0px, transparent 50%);
+            padding: 2rem 1.5rem;
+            background-image:
+                radial-gradient(ellipse at 10% 0%, rgba(139, 92, 246, 0.12) 0px, transparent 55%),
+                radial-gradient(ellipse at 90% 100%, rgba(236, 72, 153, 0.1) 0px, transparent 55%);
         }
 
         .container {
             width: 100%;
-            max-width: 1000px;
+            max-width: 1060px;
         }
 
+        /* ── Header ── */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border);
         }
 
-        h1 {
-            font-size: 2.5rem;
+        .header-left h1 {
+            font-size: 2rem;
             font-weight: 800;
-            background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+            background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .header-left .subtitle {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 0.25rem;
+            font-weight: 400;
         }
 
         .status-badge {
             padding: 0.5rem 1rem;
             border-radius: 99px;
             font-weight: 600;
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
         }
 
         .status-dot {
@@ -79,376 +99,890 @@
             height: 8px;
             border-radius: 50%;
             background: var(--danger);
-            box-shadow: 0 0 10px var(--danger);
+            box-shadow: 0 0 8px var(--danger);
+            transition: all 0.3s ease;
+            animation: pulse-red 2s infinite;
         }
 
         .status-dot.active {
             background: var(--success);
-            box-shadow: 0 0 10px var(--success);
+            box-shadow: 0 0 8px var(--success);
+            animation: pulse-green 2s infinite;
         }
 
+        @keyframes pulse-green {
+            0%, 100% { box-shadow: 0 0 6px var(--success); }
+            50% { box-shadow: 0 0 14px var(--success); }
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 6px var(--danger); }
+            50% { box-shadow: 0 0 14px var(--danger); }
+        }
+
+        /* ── Grid Layout ── */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
         }
 
+        /* ── Cards ── */
         .card {
             background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1.5rem;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
             padding: 1.5rem;
-            transition: transform 0.3s ease, border-color 0.3s ease;
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
         }
 
         .card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-glow);
         }
 
         .card-title {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             font-weight: 600;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.6rem;
+            color: var(--text-main);
         }
 
-        .card-title i {
-            font-size: 1.5rem;
-            color: var(--accent-primary);
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
         }
 
+        .icon-settings { background: rgba(139, 92, 246, 0.15); }
+        .icon-latency  { background: rgba(245, 158, 11, 0.15); }
+        .icon-errors   { background: rgba(239, 68, 68, 0.15); }
+
+        /* ── Form Elements ── */
         .form-group {
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
         }
 
         label {
             display: block;
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             color: var(--text-dim);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
+            font-weight: 400;
+            letter-spacing: 0.01em;
         }
 
         .input-row {
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
         }
 
-        input[type="number"], input[type="text"] {
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 0.75rem 1rem;
-            border-radius: 0.75rem;
+        input[type="number"],
+        input[type="text"] {
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.65rem 0.85rem;
+            border-radius: var(--radius-md);
             width: 100%;
             outline: none;
-            transition: border-color 0.2s;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
-        input:focus {
+        input[type="number"]:focus,
+        input[type="text"]:focus {
             border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+        }
+
+        input[type="number"]:disabled,
+        input[type="text"]:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .input-unit {
+            position: relative;
+        }
+
+        .input-unit::after {
+            content: attr(data-unit);
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            pointer-events: none;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .input-unit input {
+            padding-right: 2.5rem;
+        }
+
+        .input-error {
+            border-color: var(--danger) !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+        }
+
+        .error-text {
+            color: var(--danger);
+            font-size: 0.7rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+
+        .error-text.visible {
+            display: block;
+        }
+
+        /* ── Range Slider ── */
+        .range-wrapper {
+            position: relative;
+            margin-top: 0.25rem;
+        }
+
+        .range-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .range-header label {
+            margin-bottom: 0;
+        }
+
+        .range-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            background: rgba(139, 92, 246, 0.12);
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            min-width: 42px;
+            text-align: center;
         }
 
         input[type="range"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
             width: 100%;
             height: 6px;
-            background: rgba(255, 255, 255, 0.1);
             border-radius: 3px;
             outline: none;
-            -webkit-appearance: none;
+            cursor: pointer;
+            background: transparent;
+            position: relative;
         }
 
+        /* Track */
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        input[type="range"]::-moz-range-track {
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+        }
+
+        /* Thumb */
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
+            appearance: none;
             width: 18px;
             height: 18px;
             background: var(--accent-primary);
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+            margin-top: -6px;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+            transition: box-shadow 0.2s ease, transform 0.15s ease;
+            border: 2px solid #1a1a2e;
         }
 
-        .range-value {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            margin-top: 0.5rem;
-            color: var(--text-dim);
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.75rem;
-            font-weight: 600;
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: var(--accent-primary);
+            border-radius: 50%;
             cursor: pointer;
-            transition: all 0.2s;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+            transition: box-shadow 0.2s ease, transform 0.15s ease;
+            border: 2px solid #1a1a2e;
+        }
+
+        input[type="range"]:hover::-webkit-slider-thumb {
+            box-shadow: 0 0 16px rgba(139, 92, 246, 0.6);
+            transform: scale(1.15);
+        }
+
+        input[type="range"]:hover::-moz-range-thumb {
+            box-shadow: 0 0 16px rgba(139, 92, 246, 0.6);
+            transform: scale(1.15);
+        }
+
+        /* Firefox progress fill */
+        input[type="range"]::-moz-range-progress {
+            height: 6px;
+            border-radius: 3px;
+            background: var(--accent-gradient);
+        }
+
+        /* ── Buttons ── */
+        .btn {
+            padding: 0.7rem 1.25rem;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
             border: none;
             width: 100%;
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.01em;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            background: var(--accent-gradient);
             color: white;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.25);
         }
 
         .btn-primary:hover {
-            opacity: 0.9;
-            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
         }
 
         .btn-toggle {
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-toggle::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--success);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-toggle span {
+            position: relative;
+            z-index: 1;
         }
 
         .btn-toggle.active {
-            background: var(--success);
             border-color: var(--success);
+            color: white;
         }
 
+        .btn-toggle.active::before {
+            opacity: 1;
+        }
+
+        /* ── Metrics ── */
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-top: 1rem;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
         }
 
         .metric-card {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 1rem;
-            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.025);
+            padding: 1rem 0.75rem;
+            border-radius: var(--radius-md);
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: border-color 0.2s ease;
+        }
+
+        .metric-card:hover {
+            border-color: var(--border-hover);
         }
 
         .metric-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-main);
+            font-size: 1.75rem;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
             margin-bottom: 0.25rem;
+            transition: color 0.3s ease;
         }
 
         .metric-label {
-            font-size: 0.75rem;
-            color: var(--text-dim);
+            font-size: 0.65rem;
+            color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+        }
+
+        .metric-total .metric-value { color: var(--text-main); }
+        .metric-success .metric-value { color: var(--success); }
+        .metric-fail .metric-value { color: var(--danger); }
+        .metric-drop .metric-value { color: var(--warning); }
+        .metric-delay .metric-value { color: var(--accent-primary); }
+
+        /* ── Logs ── */
+        .logs-card {
+            margin-top: 1.25rem;
+        }
+
+        .logs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .logs-header .card-title {
+            margin-bottom: 0;
+        }
+
+        .btn-clear {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.2s ease;
+            width: auto;
+        }
+
+        .btn-clear:hover {
+            background: rgba(239, 68, 68, 0.2);
         }
 
         .logs {
-            background: rgba(15, 23, 42, 0.8);
-            border-radius: 1.5rem;
-            padding: 1.5rem;
+            background: rgba(6, 8, 16, 0.7);
+            border-radius: var(--radius-md);
+            padding: 1rem;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.875rem;
-            height: 300px;
+            font-size: 0.78rem;
+            height: 240px;
             overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        .logs::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .logs::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .logs::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
         }
 
         .log-entry {
-            margin-bottom: 0.5rem;
-            border-left: 2px solid var(--accent-primary);
-            padding-left: 0.75rem;
+            padding: 0.35rem 0 0.35rem 0.75rem;
+            border-left: 2px solid var(--border);
+            margin-bottom: 0.35rem;
+            animation: logSlideIn 0.25s ease;
+            line-height: 1.4;
         }
 
-        .log-time { color: var(--text-dim); }
-        .log-method { color: var(--accent-primary); font-weight: 600; }
-        .log-url { color: var(--text-main); }
-        .log-status { color: var(--success); }
-        .log-status.fail { color: var(--danger); }
-        .log-status.delay { color: var(--warning); }
+        @keyframes logSlideIn {
+            from { opacity: 0; transform: translateX(-8px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
 
+        .log-entry.log-system { border-left-color: var(--accent-primary); }
+        .log-entry.log-success { border-left-color: var(--success); }
+        .log-entry.log-error { border-left-color: var(--danger); }
+
+        .log-time { color: var(--text-muted); }
+        .log-tag { font-weight: 600; }
+        .log-tag-system { color: var(--accent-primary); }
+        .log-tag-success { color: var(--success); }
+        .log-tag-error { color: var(--danger); }
+        .log-msg { color: var(--text-dim); }
+
+        /* ── Toast ── */
+        .toast-container {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .toast {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+            max-width: 320px;
+        }
+
+        .toast-success { border-left: 3px solid var(--success); }
+        .toast-error   { border-left: 3px solid var(--danger); }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes toastOut {
+            from { opacity: 1; }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+
+        /* ── Connection Banner ── */
+        .connection-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            border-radius: var(--radius-md);
+            padding: 0.65rem 1rem;
+            font-size: 0.8rem;
+            color: var(--danger);
+            margin-bottom: 1.25rem;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .connection-error.visible {
+            display: flex;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+
+            header { flex-direction: column; gap: 1rem; align-items: flex-start; }
+
+            .header-left h1 { font-size: 1.5rem; }
+
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Chaos Control Center</h1>
+            <div class="header-left">
+                <h1>💥 Chaos Control Center</h1>
+                <div class="subtitle">Resilience testing proxy for QueX Server</div>
+            </div>
             <div class="status-badge">
                 <div id="statusDot" class="status-dot"></div>
-                <span id="statusText">System Offline</span>
+                <span id="statusText">Connecting...</span>
             </div>
         </header>
 
+        <div id="connectionError" class="connection-error">
+            ⚠️ Cannot reach Chaos Middleware server. Make sure it's running.
+        </div>
+
         <div class="grid">
+            <!-- General Settings -->
             <div class="card">
-                <div class="card-title">⚙️ General Settings</div>
-                <div class="form-group">
-                    <button id="toggleBtn" class="btn btn-toggle">Enable Chaos Injection</button>
+                <div class="card-title">
+                    <div class="card-icon icon-settings">⚙️</div>
+                    General Settings
                 </div>
                 <div class="form-group">
-                    <label>Target Server URL</label>
+                    <button id="toggleBtn" class="btn btn-toggle">
+                        <span>Enable Chaos Injection</span>
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label>Target Server</label>
                     <input type="text" id="targetUrl" placeholder="http://localhost:5000" disabled>
                 </div>
                 <button id="saveBtn" class="btn btn-primary">Apply Configuration</button>
             </div>
 
+            <!-- Latency Card -->
             <div class="card">
-                <div class="card-title">⏳ Latency (ms)</div>
+                <div class="card-title">
+                    <div class="card-icon icon-latency">⏳</div>
+                    Latency Injection
+                </div>
                 <div class="input-row">
                     <div class="form-group" style="flex: 1;">
-                        <label>Min</label>
-                        <input type="number" id="latMin" value="100">
+                        <label>Min Delay</label>
+                        <div class="input-unit" data-unit="ms">
+                            <input type="number" id="latMin" value="100" min="0" step="50">
+                        </div>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label>Max</label>
-                        <input type="number" id="latMax" value="1000">
+                        <label>Max Delay</label>
+                        <div class="input-unit" data-unit="ms">
+                            <input type="number" id="latMax" value="1000" min="0" step="50">
+                        </div>
                     </div>
                 </div>
-                <div class="range-value">
-                    <span>Low Impact</span>
-                    <span>High Impact</span>
+                <div id="latencyError" class="error-text">⚠ Min delay must be ≤ Max delay</div>
+                <div style="margin-top: 0.5rem; font-size: 0.72rem; color: var(--text-muted);">
+                    Each request will be delayed by a random value in this range.
                 </div>
             </div>
 
+            <!-- Error Rates Card -->
             <div class="card">
-                <div class="card-title">🛑 Error Rates</div>
-                <div class="form-group">
-                    <label>Failure Rate (HTTP 500)</label>
-                    <input type="range" id="failRate" min="0" max="1" step="0.01" value="0.1">
-                    <div class="range-value"><span id="failRateVal">10%</span></div>
+                <div class="card-title">
+                    <div class="card-icon icon-errors">🛑</div>
+                    Error Injection
                 </div>
+
                 <div class="form-group">
-                    <label>Request Drop Rate</label>
-                    <input type="range" id="dropRate" min="0" max="1" step="0.01" value="0.05">
-                    <div class="range-value"><span id="dropRateVal">5%</span></div>
+                    <div class="range-wrapper">
+                        <div class="range-header">
+                            <label>Failure Rate (HTTP 500)</label>
+                            <div class="range-badge" id="failRateVal">10%</div>
+                        </div>
+                        <input type="range" id="failRate" min="0" max="1" step="0.01" value="0.1">
+                    </div>
                 </div>
+
                 <div class="form-group">
-                    <label>WebSocket Packet Loss</label>
-                    <input type="range" id="wsRate" min="0" max="1" step="0.01" value="0.1">
-                    <div class="range-value"><span id="wsRateVal">10%</span></div>
+                    <div class="range-wrapper">
+                        <div class="range-header">
+                            <label>Request Drop Rate</label>
+                            <div class="range-badge" id="dropRateVal">5%</div>
+                        </div>
+                        <input type="range" id="dropRate" min="0" max="1" step="0.01" value="0.05">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="range-wrapper">
+                        <div class="range-header">
+                            <label>WebSocket Packet Loss</label>
+                            <div class="range-badge" id="wsRateVal">10%</div>
+                        </div>
+                        <input type="range" id="wsRate" min="0" max="1" step="0.01" value="0.1">
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="card" style="margin-bottom: 2rem;">
+        <!-- Metrics -->
+        <div class="card" style="margin-bottom: 1.25rem;">
             <div class="card-title">📊 Real-time Metrics</div>
             <div class="metrics-grid">
-                <div class="metric-card">
+                <div class="metric-card metric-total">
                     <div class="metric-value" id="mTotal">0</div>
-                    <div class="metric-label">Total Requests</div>
+                    <div class="metric-label">Total</div>
                 </div>
-                <div class="metric-card">
-                    <div class="metric-value" id="mFail" style="color: var(--danger);">0</div>
+                <div class="metric-card metric-fail">
+                    <div class="metric-value" id="mFail">0</div>
                     <div class="metric-label">Failures</div>
                 </div>
-                <div class="metric-card">
-                    <div class="metric-value" id="mDrop" style="color: var(--warning);">0</div>
+                <div class="metric-card metric-drop">
+                    <div class="metric-value" id="mDrop">0</div>
                     <div class="metric-label">Dropped</div>
                 </div>
-                <div class="metric-card">
-                    <div class="metric-value" id="mLatency" style="color: var(--accent-primary);">0</div>
+                <div class="metric-card metric-delay">
+                    <div class="metric-value" id="mLatency">0</div>
                     <div class="metric-label">Delayed</div>
                 </div>
             </div>
         </div>
 
-        <div class="logs" id="logContainer">
-            <div class="log-entry">
-                <span class="log-time">[System]</span> Dashboard initialized...
+        <!-- Logs -->
+        <div class="card logs-card">
+            <div class="logs-header">
+                <div class="card-title">📋 Activity Log</div>
+                <button class="btn btn-clear" id="clearLogsBtn">Clear</button>
+            </div>
+            <div class="logs" id="logContainer">
+                <div class="log-entry log-system">
+                    <span class="log-time">[--:--:--]</span>
+                    <span class="log-tag log-tag-system">INIT</span>
+                    <span class="log-msg">Dashboard loaded, connecting to server...</span>
+                </div>
             </div>
         </div>
     </div>
 
+    <div class="toast-container" id="toastContainer"></div>
+
     <script>
-        const API_BASE = ''; // Same origin
+        // ── State ──
+        let connected = false;
+        let previousMetrics = null;
 
+        // ── Elements ──
+        const $ = (id) => document.getElementById(id);
+        const toggleBtn = $('toggleBtn');
+        const saveBtn = $('saveBtn');
+        const statusDot = $('statusDot');
+        const statusText = $('statusText');
+        const connectionError = $('connectionError');
+        const logContainer = $('logContainer');
+        const latencyError = $('latencyError');
+
+        // ── Range Slider Gradient Fill (Webkit) ──
+        function updateSliderFill(slider) {
+            const min = parseFloat(slider.min);
+            const max = parseFloat(slider.max);
+            const val = parseFloat(slider.value);
+            const pct = ((val - min) / (max - min)) * 100;
+            slider.style.background = `linear-gradient(to right, #8b5cf6 0%, #ec4899 ${pct}%, rgba(255,255,255,0.08) ${pct}%)`;
+        }
+
+        // ── Toast Notifications ──
+        function showToast(message, type = 'success') {
+            const container = $('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `${type === 'success' ? '✅' : '❌'} ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // ── Log Entry ──
+        function addLog(tag, message, type = 'system') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+            entry.innerHTML = `<span class="log-time">[${time}]</span> <span class="log-tag log-tag-${type}">${tag}</span> <span class="log-msg">${message}</span>`;
+            logContainer.prepend(entry);
+
+            // Keep max 100 entries
+            while (logContainer.children.length > 100) {
+                logContainer.removeChild(logContainer.lastChild);
+            }
+        }
+
+        // ── Fetch Config ──
         async function fetchConfig() {
-            const res = await fetch('/admin/config');
-            const config = await res.json();
-            updateUI(config);
+            try {
+                const res = await fetch('/admin/config');
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const config = await res.json();
+                updateUI(config);
+                if (!connected) {
+                    connected = true;
+                    connectionError.classList.remove('visible');
+                    addLog('CONNECTED', 'Successfully connected to Chaos Middleware', 'success');
+                }
+            } catch (err) {
+                connected = false;
+                connectionError.classList.add('visible');
+                statusDot.classList.remove('active');
+                statusText.innerText = 'Server Offline';
+            }
         }
 
+        // ── Fetch Metrics ──
         async function fetchMetrics() {
-            const res = await fetch('/admin/metrics');
-            const metrics = await res.json();
-            document.getElementById('mTotal').innerText = metrics.totalRequests;
-            document.getElementById('mFail').innerText = metrics.failedRequests;
-            document.getElementById('mDrop').innerText = metrics.droppedRequests;
-            document.getElementById('mLatency').innerText = metrics.latencyApplied;
+            try {
+                const res = await fetch('/admin/metrics');
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const metrics = await res.json();
+
+                $('mTotal').innerText = metrics.totalRequests;
+                $('mFail').innerText = metrics.failedRequests;
+                $('mDrop').innerText = metrics.droppedRequests;
+                $('mLatency').innerText = metrics.latencyApplied;
+
+                // Log new activity
+                if (previousMetrics) {
+                    const newFails = metrics.failedRequests - previousMetrics.failedRequests;
+                    const newDrops = metrics.droppedRequests - previousMetrics.droppedRequests;
+                    const newDelays = metrics.latencyApplied - previousMetrics.latencyApplied;
+                    const newTotal = metrics.totalRequests - previousMetrics.totalRequests;
+
+                    if (newFails > 0) addLog('FAIL', `${newFails} request(s) returned 500`, 'error');
+                    if (newDrops > 0) addLog('DROP', `${newDrops} request(s) dropped`, 'error');
+                    if (newDelays > 0) addLog('DELAY', `${newDelays} request(s) delayed`, 'system');
+                    if (newTotal > 0 && newFails === 0 && newDrops === 0) {
+                        addLog('OK', `${newTotal - newDelays > 0 ? newTotal - newDelays : 0} request(s) forwarded`, 'success');
+                    }
+                }
+                previousMetrics = { ...metrics };
+
+            } catch (err) {
+                // Silently ignore metric failures
+            }
         }
 
+        // ── Update UI from Config ──
         function updateUI(config) {
-            const toggleBtn = document.getElementById('toggleBtn');
-            const statusDot = document.getElementById('statusDot');
-            const statusText = document.getElementById('statusText');
-
             if (config.enabled) {
-                toggleBtn.innerText = 'Disable Chaos Injection';
+                toggleBtn.innerHTML = '<span>Disable Chaos Injection</span>';
                 toggleBtn.classList.add('active');
                 statusDot.classList.add('active');
-                statusText.innerText = 'Chaos System Active';
+                statusText.innerText = 'Chaos Active';
             } else {
-                toggleBtn.innerText = 'Enable Chaos Injection';
+                toggleBtn.innerHTML = '<span>Enable Chaos Injection</span>';
                 toggleBtn.classList.remove('active');
                 statusDot.classList.remove('active');
-                statusText.innerText = 'Chaos System Paused';
+                statusText.innerText = 'Chaos Paused';
             }
 
-            document.getElementById('latMin').value = config.latency.min;
-            document.getElementById('latMax').value = config.latency.max;
-            document.getElementById('failRate').value = config.failureRate;
-            document.getElementById('dropRate').value = config.dropRate;
-            document.getElementById('wsRate').value = config.packetLoss;
+            $('latMin').value = config.latency.min;
+            $('latMax').value = config.latency.max;
 
-            document.getElementById('failRateVal').innerText = (config.failureRate * 100).toFixed(0) + '%';
-            document.getElementById('dropRateVal').innerText = (config.dropRate * 100).toFixed(0) + '%';
-            document.getElementById('wsRateVal').innerText = (config.packetLoss * 100).toFixed(0) + '%';
+            const failSlider = $('failRate');
+            const dropSlider = $('dropRate');
+            const wsSlider = $('wsRate');
+
+            failSlider.value = config.failureRate;
+            dropSlider.value = config.dropRate;
+            wsSlider.value = config.packetLoss;
+
+            $('failRateVal').innerText = (config.failureRate * 100).toFixed(0) + '%';
+            $('dropRateVal').innerText = (config.dropRate * 100).toFixed(0) + '%';
+            $('wsRateVal').innerText = (config.packetLoss * 100).toFixed(0) + '%';
+
+            updateSliderFill(failSlider);
+            updateSliderFill(dropSlider);
+            updateSliderFill(wsSlider);
+
+            validateLatency();
         }
 
-        document.getElementById('toggleBtn').onclick = async () => {
-            const isActive = document.getElementById('toggleBtn').classList.contains('active');
+        // ── Validate Latency ──
+        function validateLatency() {
+            const min = parseInt($('latMin').value) || 0;
+            const max = parseInt($('latMax').value) || 0;
+
+            if (min > max) {
+                $('latMin').classList.add('input-error');
+                $('latMax').classList.add('input-error');
+                latencyError.classList.add('visible');
+                return false;
+            } else {
+                $('latMin').classList.remove('input-error');
+                $('latMax').classList.remove('input-error');
+                latencyError.classList.remove('visible');
+                return true;
+            }
+        }
+
+        // ── Save Config ──
+        async function saveConfig(updates) {
+            try {
+                const res = await fetch('/admin/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updates)
+                });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                updateUI(data.config);
+                showToast('Configuration updated');
+                addLog('CONFIG', 'Configuration applied successfully', 'success');
+            } catch (err) {
+                showToast('Failed to update configuration', 'error');
+                addLog('ERROR', `Config update failed: ${err.message}`, 'error');
+            }
+        }
+
+        // ── Event Listeners ──
+
+        // Toggle chaos
+        toggleBtn.onclick = async () => {
+            const isActive = toggleBtn.classList.contains('active');
             await saveConfig({ enabled: !isActive });
         };
 
-        document.getElementById('saveBtn').onclick = async () => {
+        // Apply button
+        saveBtn.onclick = async () => {
+            if (!validateLatency()) {
+                showToast('Fix latency values before applying', 'error');
+                return;
+            }
+
             const config = {
                 latency: {
-                    min: parseInt(document.getElementById('latMin').value),
-                    max: parseInt(document.getElementById('latMax').value)
+                    min: parseInt($('latMin').value) || 0,
+                    max: parseInt($('latMax').value) || 0
                 },
-                failureRate: parseFloat(document.getElementById('failRate').value),
-                dropRate: parseFloat(document.getElementById('dropRate').value),
-                packetLoss: parseFloat(document.getElementById('wsRate').value)
+                failureRate: parseFloat($('failRate').value),
+                dropRate: parseFloat($('dropRate').value),
+                packetLoss: parseFloat($('wsRate').value)
             };
             await saveConfig(config);
         };
 
-        async function saveConfig(updates) {
-            const res = await fetch('/admin/config', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updates)
-            });
-            const data = await res.json();
-            updateUI(data.config);
-            addLog('System', 'Configuration updated successfully');
-        }
+        // Latency validation on input
+        $('latMin').addEventListener('input', validateLatency);
+        $('latMax').addEventListener('input', validateLatency);
 
-        function addLog(type, message) {
-            const logContainer = document.getElementById('logContainer');
-            const entry = document.createElement('div');
-            entry.className = 'log-entry';
-            const time = new Date().toLocaleTimeString();
-            entry.innerHTML = `<span class="log-time">[${time}]</span> <span class="log-method">${type}</span> ${message}`;
-            logContainer.prepend(entry);
-        }
-
-        // Event listeners for ranges
+        // Range slider live update
         ['failRate', 'dropRate', 'wsRate'].forEach(id => {
-            document.getElementById(id).oninput = (e) => {
-                document.getElementById(id + 'Val').innerText = (e.target.value * 100).toFixed(0) + '%';
-            };
+            const slider = $(id);
+            slider.addEventListener('input', (e) => {
+                $(id + 'Val').innerText = (e.target.value * 100).toFixed(0) + '%';
+                updateSliderFill(slider);
+            });
+            // Initialize fill
+            updateSliderFill(slider);
         });
 
-        // Initial load
+        // Clear logs
+        $('clearLogsBtn').onclick = () => {
+            logContainer.innerHTML = '';
+            addLog('SYSTEM', 'Logs cleared', 'system');
+        };
+
+        // ── Initialization ──
         fetchConfig();
         setInterval(fetchMetrics, 2000);
+        setInterval(fetchConfig, 10000); // Refresh config every 10s as heartbeat
     </script>
 </body>
 </html>
